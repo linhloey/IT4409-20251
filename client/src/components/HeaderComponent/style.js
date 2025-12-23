@@ -3,10 +3,11 @@ import { Row } from "antd";
 
 export const WrapperHeader = styled(Row)`
   background-color: rgb(26, 148, 255);
-  padding: 20px 120px;
   align-items: center;
   gap: 16px;
   flex-wrap: nowrap;
+  width: 1270px;
+  padding: 10px 0;
 `;
 
 export const WrapperTextHeader = styled.span`

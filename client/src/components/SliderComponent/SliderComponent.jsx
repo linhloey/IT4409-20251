@@ -1,25 +1,24 @@
 import React from "react";
-import Slider from 'react-slick'
+import { WrapperSliderStyle } from './style'
 import { Image } from 'antd'
 
 const SliderComponent = ({arrImages}) => {
-  var settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 1000
-  };
+    const settings = {
+        dots: true,
+        arrows: true,
+        effect: "scrollx",
+        autoplay: true,
+        autoplaySpeed: 1500,
+        pauseOnHover: true
+    };
     return (
-        <Slider {...settings}>
+        <WrapperSliderStyle {...settings}>
             {arrImages.map((image) => {
                 return (
                     <Image src={image} alt="slider" preview={false} width="100%" height="274px" />
                 )
             })}
-        </Slider>
+        </WrapperSliderStyle>
     )
 };
 
