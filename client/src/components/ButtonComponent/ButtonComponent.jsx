@@ -1,17 +1,19 @@
 import React from 'react'
 import { Button } from 'antd'
-import { SearchOutlined } from '@ant-design/icons'
 
-const ButtonComponent = ({ size, styleButton, styleTextButton, textButton, ...rests }) => {
-  return (
-    <Button 
-        size={size} 
-        style={styleButton}
-        {...rests}
-    >
-        <span style={styleTextButton}>{textButton}</span>
-    </Button>
-  )
+const ButtonComponent = ({ size, styleButton, styleTextButton, textButton, disabled, ...rests }) => {
+	return (
+		<Button 
+			style={{
+				...styleButton,
+				background: disabled ? '#ccc' : styleButton.background
+			}}
+			size={size} 
+			{...rests}
+		>
+			<span style={styleTextButton}>{textButton}</span>
+		</Button>
+	)
 }
 
 export default ButtonComponent
