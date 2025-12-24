@@ -70,7 +70,7 @@ const ProductDetailsComponent = () => {
                 <ButtonComponent
                     size={40} 
                     styleButton={{ 
-                        background: 'rgb(255, 57, 69', 
+                        background: 'rgb(255, 57, 69)', 
                         height: '48px',
                         width: '220px',
                         border: 'none',
@@ -85,11 +85,11 @@ const ProductDetailsComponent = () => {
                         background: '#fff', 
                         height: '48px',
                         width: '220px',
-                        border: '1px solid rgb(13, 92, 182',
+                        border: '1px solid rgb(13, 92, 182)',
                         borderRadius:'4px',                     
                     }}
                     textButton={'Mua trả sau'}
-                    styleTextButton={{ color: 'rgb(13, 92, 182', fontSize: '15px' }}
+                    styleTextButton={{ color: 'rgb(13, 92, 182)', fontSize: '15px' }}
                 ></ButtonComponent>
             </div>
         </Col>

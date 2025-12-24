@@ -2,30 +2,38 @@ import styled from "styled-components";
 import { Row } from "antd";
 
 export const WrapperHeader = styled(Row)`
-  background-color: rgb(26, 148, 255);
-  align-items: center;
-  gap: 16px;
-  flex-wrap: nowrap;
-  width: 1270px;
-  padding: 10px 0;
+	background-color: rgb(26, 148, 255);
+	align-items: center;
+	gap: 16px;
+	flex-wrap: nowrap;
+	width: 1270px;
+	padding: 10px 0;
 `;
 
 export const WrapperTextHeader = styled.span`
-  color: #fff;
-  font-size: 18px;
-  font-weight: bold;
-  text-align: left;
+	color: #fff;
+	font-size: 18px;
+	font-weight: bold;
+	text-align: left;
 `;
 
 export const WrapperHeaderAccount = styled.div`
-  display: flex;
-  align-items: center;
-  color: #fff;
-  gap: 10px;
+	display: flex;
+	align-items: center;
+	color: #fff;
+	gap: 10px;
 `;
 
 export const WrapperTextHeaderSmall = styled.span`
-  font-size: 13px;
-  color: #fff;
-  white-space: nowrap;
+	font-size: 13px;
+	color: #fff;
+	white-space: nowrap;
 `;
+
+export const WrapperContentPopup = styled.p`
+	cursor: pointer;
+	&:hover {
+		background: rgb(26, 148, 255);
+		color: #fff;
+}
+`

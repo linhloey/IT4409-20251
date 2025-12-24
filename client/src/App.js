@@ -1,16 +1,51 @@
 import React, { useEffect, Fragment } from "react";
-import axios from 'axios';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { routes } from "./routes";
 import DefaultComponent from "./components/DefaultComponent/DefaultComponent";
-import { useQuery } from "@tanstack/react-query";
+import { isJsonString } from './utils'
+import { jwtDecode } from "jwt-decode"
+import * as UserService from './services/UserService'
+import { useDispatch } from 'react-redux'
+import { updateUser } from './redux/slices/userSlice'
+import axios from "axios";
 
 function App() {
+  const dispatch = useDispatch()
 
+  useEffect(() => {
+    const {storageData, decoded} = handleDecoded()
+    if(decoded?.id) {
+      handleGetDetailsUser(decoded?.id, storageData )
+    }
+  }, [])
 
-  // useEffect(() => {
-  //   fetchApi()
-  // }, [])
+  const handleDecoded = () => {
+    let storageData = localStorage.getItem('access_token')
+    let decoded = {}
+    if (storageData && isJsonString(storageData)) {
+      storageData = JSON.parse(storageData)
+      decoded = jwtDecode(storageData)
+    }
+    return { decoded, storageData }
+  }
+
+  UserService.axiosJWT.interceptors.request.use(async (config) => {
+    const currentTime = new Date()
+
+    const {decoded} = handleDecoded()
+    if (decoded?.exp < currentTime.getTime()/1000) {          // Neu thoi gian het han cua token < tgian htai thi goi den refreshToken cua UserService
+      const data = await UserService.refreshToken()
+      config.headers['token'] = `Bearer ${data?.access_token}`  // gắn token xác thực (JWT) vào header của request HTTP
+    }
+    return config;
+  }, function(error) {
+    return Promise.reject(error)
+  })
+
+  const handleGetDetailsUser = async (id, token) => {
+    const res = await UserService.getDetailsUser(id, token)
+    dispatch(updateUser({...res?.data, access_token: token}))
+  }
 
   // const fetchApi = async () => {
   //   const res = await axios.get(`${process.env.REACT_APP_API_URL}/product/get-all`)

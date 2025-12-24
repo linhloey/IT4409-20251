@@ -70,8 +70,7 @@ const loginUser = (userLogin) => {
       resolve({
         status: "OK",
         message: "SUCCESS",
-        access_token,
-        refresh_token,
+        access_token
       });
     } catch (e) {
       reject(e);
