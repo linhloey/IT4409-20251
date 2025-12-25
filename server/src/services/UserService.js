@@ -1,5 +1,6 @@
 const User = require("../models/UserModel");
 const bcrypt = require("bcrypt");
+const { genneralAccessToken, genneralRefreshToken } = require('./JwtService') 
 
 const createUser = (newUser) => {
   return new Promise(async (resolve, reject) => {
@@ -45,7 +46,7 @@ const loginUser = (userLogin) => {
         email: email,
       });
       if (checkUser === null) {
-        resolve({
+        return resolve({
           status: "ERR",
           message: "The user is not found",
         });
@@ -54,7 +55,7 @@ const loginUser = (userLogin) => {
       const comparePassword = bcrypt.compareSync(password, checkUser.password);
 
       if (!comparePassword) {
-        resolve({
+        return resolve({
           status: "ERR",
           message: "The password or user is incorrect",
         });
@@ -69,10 +70,11 @@ const loginUser = (userLogin) => {
         isAdmin: checkUser.isAdmin,
       });
 
-      resolve({
+      return resolve({
         status: "OK",
         message: "SUCCESS",
-        access_token
+        access_token, 
+        refresh_token
       });
     } catch (e) {
       reject(e);
@@ -153,7 +155,7 @@ const getDetailsUser = (id) => {
       const checkUser = await User.findOne({
         _id: id,
       });
-      if (user === null) {
+      if (checkUser === null) {
         resolve({
           status: "OK",
           message: "The user is not found",
@@ -163,7 +165,7 @@ const getDetailsUser = (id) => {
       resolve({
         status: "OK",
         message: "SUCCESS",
-        data: user,
+        data: checkUser,
       });
     } catch (e) {
       reject(e);

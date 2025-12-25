@@ -33,7 +33,7 @@ const HeaderComponent = () => {
     </div>
   )
   return (
-    <div style={{ width: '100%', background: '(26, 148, 255)', display: 'flex', justifyContent: 'center' }}>
+    <div style={{ width: '100%', background: 'rgb(26, 148, 255)', display: 'flex', justifyContent: 'center' }}>
       <WrapperHeader>
         <Col span={5}>
           <WrapperTextHeader>My Website</WrapperTextHeader>
@@ -43,7 +43,7 @@ const HeaderComponent = () => {
             size="large"
             textButton="Tìm kiếm"
             placeholder="input search text"
-            allowClear="true"
+            allowClear={true}
             // onSearch={onSearch}
           />
         </Col>

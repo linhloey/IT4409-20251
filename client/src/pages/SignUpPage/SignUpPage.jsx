@@ -52,7 +52,7 @@ const SignUpPage = () => {
 	}
 
 	const handleSignUp = () => {
-		mutation.mutate(email, password, confirmPassword)
+		mutation.mutate({ email, password, confirmPassword })
 	}
 
 	return (
@@ -109,7 +109,7 @@ const SignUpPage = () => {
 								onClick={handleSignUp}
 								size="large"
 								styleButton={{ 
-									background: 'rgb(255, 57, 69', 
+									background: 'rgb(255, 57, 69)', 
 									height: '48px',
 									width: '100%',
 									border: 'none',

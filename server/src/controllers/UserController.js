@@ -53,12 +53,12 @@ const loginUser = async (req, res) => {
     res.cookie('refresh_token', refresh_token, {
       httpOnly: true,
       secure: false,
-      samesite: 'strict'
+      sameSite: 'strict'
     })
     return res.status(200).json(newReponse);
   } catch (e) {
-    return res.status(404).json({
-      message: e,
+    return res.status(500).json({
+      message: e.message,
     });
   }
 }
@@ -134,7 +134,7 @@ const getDetailsUser = async (req, res) => {
 
 const refreshToken = async (req, res)  => {
 try {  
-const token = req.headers.token.split(' ') [1]
+const token = req.headers.token?.split(' ') [1]
 if (!token) {  
 return res.status(200).json({  
 status: 'ERR',  
