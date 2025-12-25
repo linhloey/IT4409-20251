@@ -33,7 +33,9 @@ const createUser = (newUser) => {
       reject(e);
     }
   });
-};
+}
+
+
 
 const loginUser = (userLogin) => {
   return new Promise(async (resolve, reject) => {
@@ -76,7 +78,7 @@ const loginUser = (userLogin) => {
       reject(e);
     }
   });
-};
+}
 
 const updateUser = (id, data) => {
   return new Promise(async (resolve, reject) => {
@@ -102,7 +104,7 @@ const updateUser = (id, data) => {
       reject(e);
     }
   });
-};
+}
 
 const deleteUser = (id) => {
   return new Promise(async (resolve, reject) => {
@@ -127,7 +129,7 @@ const deleteUser = (id) => {
       reject(e);
     }
   });
-};
+}
 
 const getAllUser = () => {
   return new Promise(async (resolve, reject) => {
@@ -143,7 +145,7 @@ const getAllUser = () => {
       reject(e);
     }
   });
-};
+}
 
 const getDetailsUser = (id) => {
   return new Promise(async (resolve, reject) => {
@@ -167,13 +169,13 @@ const getDetailsUser = (id) => {
       reject(e);
     }
   });
-};
+}
 
-module.exports = {
-  createUser,
-  loginUser,
-  updateUser,
-  deleteUser,
-  getAllUser,
-  getDetailsUser,
-};
+module.exports = {  
+    createUser,
+    loginUser,
+    updateUser,
+    deleteUser,
+    getAllUser,
+    getDetailsUser
+} 

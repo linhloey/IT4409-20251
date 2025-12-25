@@ -7,14 +7,14 @@ const bodyParser = require('body-parser')
 dotenv.config() 
 
 const app = express()  
-const port = process.env.PORT || 3000 
+const port = process.env.PORT || 3001 
 
-app.use(cors)
+app.use(cors())
 app.use(bodyParser.json())
 
 routes(app);  
 
-mongoose.connect(`${process.env.MONGO_DB}`)  //link db
+mongoose.connect(`${process.env.MONGO_DB}`) 
     .then(() => {
         console.log('Connect Db success!')
     })
