@@ -47,13 +47,6 @@ function App() {
     dispatch(updateUser({...res?.data, access_token: token}))
   }
 
-  // const fetchApi = async () => {
-  //   const res = await axios.get(`${process.env.REACT_APP_API_URL}/product/get-all`)
-  //   return res.data
-  // }
-
-  // const query = useQuery({ queryKey: ['todos'], queryFn: fetchApi })
-
   return (
     <div>
       <Router>

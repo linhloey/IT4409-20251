@@ -1,13 +1,13 @@
-const { get } = require('../routes/UserRouter')
-const UserService = require('../services/UserService')
-const JwtService = require('../services/JwtService')  
+const { get } = require("../routes/UserRouter");
+const UserService = require("../services/UserService");
+const JwtService = require("../services/JwtService");
 
 const createUser = async (req, res) => {
   try {
     const { name, email, password, confirmPassword, phone } = req.body;
     const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
     const isCheckEmail = reg.test(email);
-    if (!email || !password || !confirmPassword ) {
+    if (!email || !password || !confirmPassword) {
       return res.status(200).json({
         status: "ERR",
         message: "The input is required",
@@ -30,14 +30,14 @@ const createUser = async (req, res) => {
       message: e,
     });
   }
-}
+};
 
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
     const isCheckEmail = reg.test(email);
-    if (!email || !password ) {
+    if (!email || !password) {
       return res.status(200).json({
         status: "ERR",
         message: "The input is required",
@@ -47,21 +47,21 @@ const loginUser = async (req, res) => {
         status: "ERR",
         message: "The input is email",
       });
-    } 
+    }
     const response = await UserService.loginUser(req.body);
-    const { refresh_token, ...newReponse } = response
-    res.cookie('refresh_token', refresh_token, {
+    const { refresh_token, ...newResponse } = response;
+    res.cookie("refresh_token", refresh_token, {
       httpOnly: true,
       secure: false,
-      sameSite: 'strict'
-    })
-    return res.status(200).json(newReponse);
+      sameSite: "strict",
+    });
+    return res.status(200).json(newResponse);
   } catch (e) {
     return res.status(500).json({
       message: e.message,
     });
   }
-}
+};
 
 const updateUser = async (req, res) => {
   try {
@@ -81,7 +81,7 @@ const updateUser = async (req, res) => {
       message: e,
     });
   }
-}
+};
 
 const deleteUser = async (req, res) => {
   try {
@@ -100,7 +100,7 @@ const deleteUser = async (req, res) => {
       message: e,
     });
   }
-}
+};
 
 const getAllUser = async (req, res) => {
   try {
@@ -111,7 +111,7 @@ const getAllUser = async (req, res) => {
       message: e,
     });
   }
-}
+};
 
 const getDetailsUser = async (req, res) => {
   try {
@@ -130,43 +130,43 @@ const getDetailsUser = async (req, res) => {
       message: e,
     });
   }
-}
+};
 
-const refreshToken = async (req, res)  => {
-try {  
-const token = req.cookies.refresh_token
-if (!token) {  
-return res.status(200).json({  
-status: 'ERR',  
-message: 'The token is required'  
-})  
-}
+const refreshToken = async (req, res) => {
+  try {
+    const token = req.cookies.refresh_token;
+    if (!token) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "The token is required",
+      });
+    }
 
-const response = await JwtService.refreshTokenJwtService(token)  
-return res.status(200).json(response)  
-} catch (e) {  
-return res.status(404).json({  
-message: e  
-})  
-}  
-}
+    const response = await JwtService.refreshTokenJwtService(token);
+    return res.status(200).json(response);
+    return
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
 
-const logoutUser = async (req, res)  => {
-try {
-  res.clearCookie('refresh_token')
-return res.status(200).json({  
-status: 'OK',  
-message: 'Logout SUCCESS'  
-})  
+const logoutUser = async (req, res) => {
+  try {
+    res.clearCookie("refresh_token");
+    return res.status(200).json({
+      status: "OK",
+      message: "Logout SUCCESS",
+    });
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
 
-} catch (e) {  
-return res.status(404).json({  
-message: e  
-})  
-}  
-}
-
-module.exports = { 
+module.exports = {
   createUser,
   loginUser,
   updateUser,
@@ -174,5 +174,5 @@ module.exports = {
   getAllUser,
   getDetailsUser,
   refreshToken,
-  logoutUser  
-}   
+  logoutUser,
+};

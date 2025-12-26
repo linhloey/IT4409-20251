@@ -17,7 +17,7 @@ export const getDetailsUser = async (id, access_token) => {
         headers: {
             token: `Bearer ${access_token}`,
         }
-    })
+    },)
     return res.data
 }
 

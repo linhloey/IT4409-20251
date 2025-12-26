@@ -15,13 +15,13 @@ export const userSlice = createSlice({
     initialState,
     reducers: {
         updateUser: (state, action) => {
-            const { name = '', email = '', phone = '', address = '', avatar = '', access_token = '', id = '' } = action.payload
+            const { name = '', email = '', phone = '', address = '', avatar = '', access_token = '', _id = '' } = action.payload
             state.name = name;
             state.email = email;
             state.phone = phone;
             state.address = address;
             state.avatar = avatar;
-            state.id = id;
+            state.id = _id;
             state.access_token = access_token
         },
         resetUser: (state) => {

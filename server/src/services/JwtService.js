@@ -20,27 +20,26 @@ return refresh_token
 
 const refreshTokenJwtService = async (token) => {  
     return new Promise(async (resolve, reject) => { 
-try{  
-jwt.verify(token, process.env.REFRESH_TOKEN, async (err, user) => {
-        if (err) {
-            resolve({
-                status: 'ERR',
-                message: 'The token is not valid'
+        try{  
+            jwt.verify(token, process.env.REFRESH_TOKEN, async (err, user) => {
+                if (err) {
+                    resolve({
+                        status: 'ERR',
+                        message: 'The token is not valid'
+                    })
+                }
+                const access_token = await genneralAccessToken({  
+                    id: user?.id,  
+                    isAdmin: user?.isAdmin  
+                }) 
+                resolve({
+                    status: 'OK',
+                    message: 'SUCCESS',
+                    access_token
+                })
             })
-        }
-        const access_token = await genneralAccessToken({  
-            id: user?.id,  
-            isAdmin: user?.isAdmin  
-        }) 
-
-        resolve({
-            status: 'OK',
-            message: 'SUCCESS',
-            access_token
-        })
-    })
-} catch (e) {
-reject(e)
+        } catch (e) {
+            reject(e)
         }
     })
 }
