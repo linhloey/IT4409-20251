@@ -28,10 +28,9 @@ jwt.verify(token, process.env.REFRESH_TOKEN, async (err, user) => {
                 message: 'The token is not valid'
             })
         }
-        const { payload } = user
         const access_token = await genneralAccessToken({  
-            id: payload?.id,  
-            isAdmin: payload?.isAdmin  
+            id: user?.id,  
+            isAdmin: user?.isAdmin  
         }) 
 
         resolve({

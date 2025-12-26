@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import { Badge, Button, Col, Popover } from 'antd'
 import { WrapperContentPopup, WrapperHeader, WrapperHeaderAccount, WrapperTextHeader, WrapperTextHeaderSmall } from './style'
 import { CaretDownOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons'
@@ -7,12 +7,13 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import * as UserService from '../../services/UserService'
 import { resetUser } from '../../redux/slices/userSlice'
-import Loading from '../../components/LoadingComponent/Loading'
+import Loading from '../LoadingComponent/Loading'
 
 const HeaderComponent = () => {
   const navigate = useNavigate()
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
+  const [userName, setUserName] = useState('')
   const [loading, setLoading] = useState(false)
 
   const handleNavigateLogin = () => {
@@ -26,10 +27,17 @@ const HeaderComponent = () => {
     setLoading(false)
   }
 
+  useEffect(() => {
+    setLoading(true)
+    setUserName(user?.name)
+    setLoading(false)
+  }, [user?.name])
+
+
   const content = (
     <div>
       <WrapperContentPopup onClick={handleLogout}>Đăng xuất</WrapperContentPopup>
-      <WrapperContentPopup>Thông tin người dùng</WrapperContentPopup>
+      <WrapperContentPopup onClick={() => navigate('/profile-user')}>Thông tin người dùng</WrapperContentPopup>
     </div>
   )
   return (
@@ -51,10 +59,10 @@ const HeaderComponent = () => {
           <Loading isLoading={loading}>
             <WrapperHeaderAccount>
               <UserOutlined style={{ fontSize: '30px' }} />
-              {user?.name ? (
+              {user?.access_token ? (
                 <>
                 <Popover content={content} trigger="click">
-                  <div style={{ cursor: 'pointer' }}>{user.name}</div>
+                  <div style={{ cursor: 'pointer' }}>{userName?.length ? userName : user?.email}</div>
                 </Popover>
                 </>
               ) : (
