@@ -8,6 +8,8 @@ price: { type: Number, required: true },
 countInStock: { type: Number, required: true },  
 rating: { type: Number, required: true },  
 description: { type: String },
+discount: { type: Number},
+selled: { type: Number}
 },
 {  
 timestamps: true,  
