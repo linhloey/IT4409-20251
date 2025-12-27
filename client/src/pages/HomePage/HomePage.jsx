@@ -18,10 +18,10 @@ const HomePage = () => {
       return res
     }
    const { isLoading, data: products } = useQuery({
-  queryKey: ['products'],
-  queryFn: fetchProductAll,
-  retry: 3,
-  retryDelay: 1000,
+      queryKey: ['products'],
+      queryFn: fetchProductAll,
+      retry: 3,
+      retryDelay: 1000,
 })
 
     return (
@@ -42,16 +42,16 @@ const HomePage = () => {
               {products?.data?.map((product) => {
                 return (
                 <CardComponent 
-                key={product._id} 
-                countInStock={product.countInStock} 
-                description={product.description} 
-                image={product.image} 
-                name={product.name} 
-                price={product.price} 
-                rating={product.rating} 
-                type={product.type}
-                selled={product.selled}
-                discount={product.discount} 
+                  key={product._id} 
+                  countInStock={product.countInStock} 
+                  description={product.description} 
+                  image={product.image} 
+                  name={product.name} 
+                  price={product.price} 
+                  rating={product.rating} 
+                  type={product.type}
+                  selled={product.selled}
+                  discount={product.discount} 
                 />
                 )
               })}

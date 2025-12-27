@@ -12,7 +12,7 @@ const rowSelection = {
   },
   getCheckboxProps: (record) => ({
     disabled: record.name === 'Disabled User',
-    // Column configuration not to be checked
+
     name: record.name,
   }),
 };
@@ -26,6 +26,7 @@ const rowSelection = {
         }}
         columns={columns}
         dataSource={data}
+        {...props}
       />
     </Loading>
   )
