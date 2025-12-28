@@ -68,7 +68,7 @@ const onSearch = (e) => {
             textButton="Tìm kiếm"
             placeholder="input search text"
             allowClear={true}
-            onSearch={onSearch}
+            onChange={onSearch}
           />
         </Col>
         )}
