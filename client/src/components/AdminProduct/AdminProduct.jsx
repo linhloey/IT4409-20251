@@ -71,6 +71,15 @@ const AdminProduct = () => {
         }
     );
 
+        const mutationDeleteMany = useMutationHooks(
+        (data) => {
+            const {token, ...ids} = data
+            const res = ProductService.deleteManyProduct(ids, token)
+            return res
+        }
+    );
+
+
     const getAllProducts = async () => {
         const res = await ProductService.getAllProduct()
         return res
@@ -99,18 +108,27 @@ const AdminProduct = () => {
     }, [form, stateProductDetails])
 
     useEffect(() => {
-      if(rowSelected) {
+      if(rowSelected && isOpenDrawer) {
+        setIsLoadingUpdate(true)
         fetchGetDetailsProduct(rowSelected)
       }
-    }, [rowSelected])
+    }, [rowSelected, isOpenDrawer])
 
     const handleDetailsProduct = () => {
       setIsOpenDrawer(true)
     }
 
+    const handleDeleteManyProducts = (ids) => {
+      mutationDeleteMany.mutate({ids: ids, token: user?.access_token}, {
+        onSettled: () =>
+          queryProduct.refetch()
+      })
+    }
+
     const { data, isPending, isSuccess, isError } = mutation;
     const { data: dataUpdated, isPending: isPendingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate;
     const { data: dataDeleted, isPending: isPendingDeleted, isSuccess: isSuccessDeleted, isError: isErrorDeleted } = mutationDelete;
+    const { data: dataDeletedMany, isPending: isPendingDeletedMany, isSuccess: isSuccessDeletedMany, isError: isErrorDeletedMany } = mutationDeleteMany;
 
     const queryProduct = useQuery({queryKey: ['products'], queryFn: getAllProducts});
     const {isLoading: isLoadingProducts, data: products} = queryProduct
@@ -306,6 +324,14 @@ const AdminProduct = () => {
         }
     }, [isSuccess]);
 
+        useEffect(() => {
+        if(isSuccessDeletedMany && dataDeletedMany?.status === 'OK') {
+          message.success();
+        } else if(isErrorDeletedMany) {
+          message.error();
+        }
+    }, [isSuccessDeletedMany]);
+
     useEffect(() => {
         if(isSuccessUpdated && dataUpdated?.status === 'OK') {
           message.success();
@@ -391,7 +417,7 @@ const AdminProduct = () => {
         <Button style={{height: '150px', width: '150px', borderRadius:'6px', borderStyle:'dashed'}} onClick={() => setIsModalOpen(true)}><PlusOutlined style={{fontSize: '60px'}} /></Button>
       </div>
       <div style={{ marginTop: '20px'}}>
-        <TableComponent columns={columns} data={dataTable} isLoading={isLoadingProducts} onRow={(record, rowIndex) => {
+        <TableComponent handleDeleteMany={handleDeleteManyProducts} columns={columns} data={dataTable} isLoading={isLoadingProducts} onRow={(record, rowIndex) => {
           return {
             onClick: event => {
               setRowSelected(record._id)
@@ -399,7 +425,7 @@ const AdminProduct = () => {
           }  
         }} />
       </div>
-      <ModalComponent title="Tạo sản phẩm" open={isModalOpen} onCancel={handleCancel} footer={null}>
+      <ModalComponent forceRender title="Tạo sản phẩm" open={isModalOpen} onCancel={handleCancel} footer={null}>
         <Loading isLoading={isPending} >
           <Form name="basic" labelCol={{span: 6,}} wrapperCol={{span: 18,}} onFinish={onFinish} autoComplete="on" form={form}>
             <Form.Item label="Name" name="Name" rules={[
