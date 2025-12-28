@@ -19,7 +19,8 @@ const ButtonInputSearch = (props) => {
             bordered={bordered} 
             placeholder={placeholder} 
             allowClear={allowClear} 
-            style={{ backgroundColor: backgroundColorInput, borderRadius:'0'}} 
+            style={{ backgroundColor: backgroundColorInput, borderRadius:'0'}}
+            {...props} 
         />
         <ButtonComponent 
             type="primary"

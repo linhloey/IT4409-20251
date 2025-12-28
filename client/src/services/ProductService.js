@@ -1,11 +1,15 @@
 import axios from "axios"
 import { axiosJWT } from "./UserService"
 
-export const getAllProduct = async () => {
-    const res = await axios.get(`${process.env.REACT_APP_API_URL}/product/get-all`)
+export const getAllProduct = async (search) => {
+    let res = {}
+    if (search?.length > 0) {
+        res = await axios.get(`${process.env.REACT_APP_API_URL}/product/get-all?filter=name&filter=${search}`)
+    } else {
+        res = await axios.get(`${process.env.REACT_APP_API_URL}/product/get-all`)
+    }
     return res.data
 }
-
 export const createProduct = async (data) => {
     const res = await axios.post(`${process.env.REACT_APP_API_URL}/product/create`, data)
     return res.data
