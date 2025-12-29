@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Col, Image, Rate, Row } from 'antd'
 import imageProduct from '../../assets/images/test.webp'
 import imageProductSmall from '../../assets/images/imagesmall.webp'
-import { WrapperStyleImageSmall, WrapperStyleColSmall, WrapperStyleNameProduct, WrapperStyleTextSell, WrapperPriceProduct, WrapperPriceTextProduct, WrapperAddressProduct, WrapperQualityProduct, WrapperInputNumber } from './style'
+import { WrapperStyleImageSmall, WrapperStyleColSmall, WrapperStyleNameProduct, WrapperStyleTextSell, WrapperPriceProduct, WrapperPriceTextProduct, WrapperAddressProduct, WrapperQualityProduct, WrapperInputNumber, WrapperPriceDiscountContainer, WrapperOriginalPriceText,WrapperDiscountText } from './style'
 import { StarFilled, PlusOutlined, MinusOutlined } from '@ant-design/icons'
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import * as ProductService from '../../services/ProductService';
@@ -67,12 +67,14 @@ const ProductDetailsComponent = ({idProduct}) => {
                     amount: numProduct,
                     image: productDetails?.image,
                     price: productDetails?.price,
-                    product: productDetails?._id
+                    product: productDetails?._id,
+                    discount: productDetails?.discount
                 }
             }))
         }
     }
     
+const priceAfterDiscount = productDetails?.price - (productDetails?.price * (productDetails?.discount || 0) / 100);
 
   return (
     <Loading isLoading={isLoading}>
@@ -108,11 +110,25 @@ const ProductDetailsComponent = ({idProduct}) => {
             <Col span={14} style={{ paddingLeft: '10px'}}>
                 <WrapperStyleNameProduct>{productDetails?.name}</WrapperStyleNameProduct>
                 <div>
-                    <Rate allowHalf disabled defaultValue={productDetails?.rating} />
+                    <Rate allowHalf disabled value={productDetails?.rating} />
                     <WrapperStyleTextSell>| Đã bán {productDetails?.selled}+</WrapperStyleTextSell>
                 </div>
                 <WrapperPriceProduct>
-                    <WrapperPriceTextProduct>{productDetails?.price}</WrapperPriceTextProduct>
+                    <WrapperPriceTextProduct>
+                        {priceAfterDiscount?.toLocaleString()} đ
+                    </WrapperPriceTextProduct>
+
+                    {productDetails?.discount > 0 && (
+                        <WrapperPriceDiscountContainer>
+                            <WrapperOriginalPriceText>
+                                {productDetails?.price?.toLocaleString()} đ
+                            </WrapperOriginalPriceText>
+                            
+                            <WrapperDiscountText>
+                                -{productDetails?.discount}%
+                            </WrapperDiscountText>
+                        </WrapperPriceDiscountContainer>
+                    )}
                 </WrapperPriceProduct>
                 <WrapperAddressProduct>
                     <span>Giao đến </span>

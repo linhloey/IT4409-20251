@@ -28,16 +28,43 @@ export const WrapperStyleTextSell = styled.span`
 export const WrapperPriceProduct = styled.div`
     background: rgb(250, 250, 250);
     border-radius: 4px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 15px 0;
 `
 
-export const WrapperPriceTextProduct = styled.h1`
+export const WrapperPriceTextProduct = styled.span`
     font-size: 32px;
-    font-weight: 500;
     line-height: 40px;
-    margin-right: 500;
-    padding: 10px;
-    margin-top: 10px;
+    margin-right: 8px;
+    font-weight: 500;
+    color: rgb(255, 66, 78);
 `
+
+export const WrapperPriceDiscountContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+export const WrapperOriginalPriceText = styled.span`
+  color: #808089;
+  text-decoration: line-through;
+  font-size: 14px;
+  line-height: 20px;
+`;
+
+export const WrapperDiscountText = styled.span`
+  color: #ff424e;
+  font-size: 13px;
+  font-weight: 600;
+  background: #fff0f1;
+  padding: 0 4px;
+  border-radius: 2px;
+  border: 1px solid #ff424e;
+`;
 
 export const WrapperAddressProduct = styled.div`
     span.address {

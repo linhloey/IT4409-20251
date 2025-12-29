@@ -32,7 +32,8 @@ const AdminProduct = () => {
         price: '',
         rating: '',
         description: '',
-        image: ''
+        image: '',
+        discount: ''
     });
 
     const [stateProductDetails, setStateProductDetails] = useState({
@@ -42,15 +43,16 @@ const AdminProduct = () => {
         price: '',
         rating: '',
         description: '',
-        image: ''
+        image: '',
+        discount: ''
     });
 
     const [form] = Form.useForm();
 
     const mutation = useMutationHooks(
         (data) => {
-            const {name, type, countInStock, price, rating, description, image} = data
-            const res = ProductService.createProduct({name, type, countInStock, price, rating, description, image})
+            const {name, type, countInStock, price, rating, description, image, discount} = data
+            const res = ProductService.createProduct({name, type, countInStock, price, rating, description, image, discount})
             return res
         }
     );
@@ -86,7 +88,7 @@ const AdminProduct = () => {
     }
 
     const fetchGetDetailsProduct = async (rowSelected) => {
-      setStateProductDetails({ name: '', type: '', countInStock: '', price: '', rating: '', description: '', image: ''})
+      setStateProductDetails({ name: '', type: '', countInStock: '', price: '', rating: '', description: '', image: '', discount: ''})
       setIsLoadingUpdate(true)
       const res = await ProductService.getDetailsProduct(rowSelected)
       if (res?.data) {
@@ -97,7 +99,8 @@ const AdminProduct = () => {
           price: res?.data?.price,
           rating: res?.data?.rating,
           description: res?.data?.description,
-          image: res?.data?.image
+          image: res?.data?.image,
+          discount: res?.data?.discount
         })
       }
       setIsLoadingUpdate(false)
@@ -285,7 +288,8 @@ const AdminProduct = () => {
             price: '',
             rating: '',
             description: '',
-            image: ''
+            image: '',
+            discount: ''
         });
         form.resetFields();
     };
@@ -299,7 +303,8 @@ const AdminProduct = () => {
             price: '',
             rating: '',
             description: '',
-            image: ''
+            image: '',
+            discount: ''
         });
         form.resetFields();
     };
@@ -319,6 +324,7 @@ const AdminProduct = () => {
         if(isSuccess && data?.status === 'OK') {
           message.success();
           handleCancel();
+          queryProduct.refetch();
         } else if(isError) {
           message.error();
         }
@@ -356,6 +362,7 @@ const AdminProduct = () => {
           queryProduct.refetch()
         }
       });
+      console.log('check data:', stateProduct)
     };
 
     const handleOnchange = (e) => {
@@ -428,7 +435,7 @@ const AdminProduct = () => {
       <ModalComponent forceRender title="Tạo sản phẩm" open={isModalOpen} onCancel={handleCancel} footer={null}>
         <Loading isLoading={isPending} >
           <Form name="basic" labelCol={{span: 6,}} wrapperCol={{span: 18,}} onFinish={onFinish} autoComplete="on" form={form}>
-            <Form.Item label="Name" name="Name" rules={[
+            <Form.Item label="Name" name="name" rules={[
                 {
                   required: true,
                   message: 'Please input your name!',
@@ -471,6 +478,15 @@ const AdminProduct = () => {
                 },
             ]}>
               <InputComponent values={stateProduct.rating} onChange={handleOnchange} name="rating"/>
+            </Form.Item>
+
+            <Form.Item label="Discount" name="discount" rules={[
+                {
+                  required: true,
+                  message: 'Please input your discount of product!',
+                },
+            ]}>
+              <InputComponent values={stateProduct.discount} onChange={handleOnchange} name="discount"/>
             </Form.Item>
 
             <Form.Item label="Description" name="description" rules={[
@@ -562,6 +578,15 @@ const AdminProduct = () => {
                 },
             ]}>
               <InputComponent values={stateProductDetails.rating} onChange={handleOnchangeDetails} name="rating"/>
+            </Form.Item>
+
+            <Form.Item label="Discount" name="discount" rules={[
+                {
+                  required: true,
+                  message: 'Please input your discount of product!',
+                },
+            ]}>
+              <InputComponent values={stateProductDetails.discount} onChange={handleOnchangeDetails} name="discount"/>
             </Form.Item>
 
             <Form.Item label="Description" name="description" rules={[

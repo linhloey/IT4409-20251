@@ -5,20 +5,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import * as Message from '../../components/Message/Message'
 import ButtonComponent from '../../components/ButtonComponent/ButtonComponent'
-import {
-  WrapperOrder,
-  HeaderOrder,
-  Content,
-  OrderList,
-  OrderItem,
-  ProductInfo,
-  ProductName,
-  ProductPrice,
-  Summary,
-  SummaryRow,
-  EmptyCartText,
-  ActionsRow
-} from './styles'
+import {WrapperOrder, HeaderOrder, Content, OrderList, OrderItem, ProductInfo, ProductName, ProductPrice, Summary, SummaryRow, EmptyCartText, ActionsRow} from './styles'
 import { increaseAmount, decreaseAmount, removeOrderProduct } from '../../redux/slices/orderSlide'
 
 const OrderPage = () => {
@@ -28,11 +15,7 @@ const OrderPage = () => {
   const user = useSelector((state) => state.user)
   const items = order?.orderItems || []
 
-  const [checkedItems, setCheckedItems] = useState([])
-
-  useEffect(() => {
-    setCheckedItems(items.map((it) => it.product))
-  }, [items])
+  const [checkedItems, setCheckedItems] = useState(order?.orderItems?.map(i => i.product) || [])
 
   const onChange = (e, id) => {
     const checked = e.target.checked
@@ -48,9 +31,25 @@ const OrderPage = () => {
   const handleDec = (id) => dispatch(decreaseAmount({ idProduct: id }))
   const handleRemove = (id) => dispatch(removeOrderProduct({ idProduct: id }))
 
-  const subtotal = items
-    .filter(i => checkedItems.includes(i.product))
-    .reduce((s, it) => s + (Number(it.price || 0) * Number(it.amount || 0)), 0)
+  // const subtotal = items
+  //   .filter(i => checkedItems.includes(i.product))
+  //   .reduce((s, it) => s + (Number(it.price || 0) * Number(it.amount || 0)), 0)
+
+  // Tính tổng tiền gốc (chưa trừ discount)
+const priceRaw = items
+  .filter(i => checkedItems.includes(i.product))
+  .reduce((total, item) => total + (Number(item.price || 0) * Number(item.amount || 0)), 0)
+
+// Tính tổng số tiền được giảm (tiền tiết kiệm)
+const totalDiscount = items
+  .filter(i => checkedItems.includes(i.product))
+  .reduce((total, item) => {
+    const discountMoney = (Number(item.price) * (Number(item.discount || 0) / 100)) * Number(item.amount)
+    return total + discountMoney
+  }, 0)
+
+// Tổng tiền cuối cùng khách phải trả
+const totalPrice = priceRaw - totalDiscount
 
   const handleCheckout = () => {
     if (!checkedItems.length) {
@@ -76,7 +75,7 @@ const OrderPage = () => {
             <Checkbox
               onChange={handleOnChangeCheckAll}
               checked={items.length > 0 && checkedItems.length === items.length}
-              indeterminate={checkedItems.length > 0 && checkedItems.length < items.length}
+              // indeterminate={checkedItems.length > 0 && checkedItems.length < items.length}
             >
               Chọn tất cả
             </Checkbox>
@@ -92,7 +91,21 @@ const OrderPage = () => {
                 <Image src={it.image} width={80} height={80} preview={false} />
                 <ProductInfo>
                   <ProductName>{it.name}</ProductName>
-                  <ProductPrice>{(Number(it.price) || 0).toLocaleString()} đ</ProductPrice>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <ProductPrice>
+                      {(it.price - (it.price * (it.discount || 0) / 100)).toLocaleString()} đ
+                    </ProductPrice>
+
+                    {it.discount > 0 && (
+                      <span style={{ textDecoration: 'line-through', color: '#888', fontSize: '12px' }}>
+                        {it.price.toLocaleString()} đ
+                      </span>
+                    )}
+
+                    {it.discount > 0 && (
+                      <span style={{ color: 'red', fontSize: '12px' }}>-{it.discount}%</span>
+                    )}
+                  </div>
                 </ProductInfo>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <InputNumber min={1} value={it.amount} onChange={(val) => {
@@ -112,7 +125,11 @@ const OrderPage = () => {
           <Divider />
           <SummaryRow>
             <span>Tạm tính</span>
-            <strong>{subtotal.toLocaleString()} đ</strong>
+            <strong>{priceRaw.toLocaleString()} đ</strong>
+          </SummaryRow>
+          <SummaryRow>
+            <span>Giảm giá</span>
+            <span style={{ color: 'red' }}>-{totalDiscount.toLocaleString()} đ</span>
           </SummaryRow>
           <SummaryRow>
             <span>Phí vận chuyển</span>
@@ -120,8 +137,10 @@ const OrderPage = () => {
           </SummaryRow>
           <Divider />
           <SummaryRow style={{ fontSize: 18 }}>
-            <span>Tổng</span>
-            <strong>{subtotal.toLocaleString()} đ</strong>
+            <span>Tổng tiền</span>
+            <strong style={{ color: 'rgb(254, 56, 52)' }}>
+              {totalPrice.toLocaleString()} đ
+            </strong>
           </SummaryRow>
           <ActionsRow>
             <ButtonComponent

@@ -63,6 +63,7 @@ export const Summary = styled.div`
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   height: fit-content;
+  font-size: 18px
 `
 
 export const SummaryRow = styled.div`
@@ -70,6 +71,7 @@ export const SummaryRow = styled.div`
   justify-content: space-between;
   align-items: center;
   margin: 10px 0;
+  font-size: 14px
 `
 
 export const ActionsRow = styled.div`
