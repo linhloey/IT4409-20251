@@ -42,11 +42,11 @@ export const orderSlide = createSlice({
         itemOrder.amount --
     },
     removeOrderProduct: (state, action) => {
-  const { idProduct } = action.payload
-  state.orderItems = state.orderItems.filter(
-    (item) => item.product !== idProduct
-  )
-}
+      const { idProduct } = action.payload
+      state.orderItems = state.orderItems.filter(
+        (item) => item.product !== idProduct
+      )
+    }
 
   },
 });

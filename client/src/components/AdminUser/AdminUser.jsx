@@ -43,13 +43,13 @@ const AdminUser = () => {
         }
     );
 
-            const mutationDeleteMany = useMutationHooks(
-            (data) => {
-                const {token, ...ids} = data
-                const res = UserService.deleteManyUser(ids, token)
-                return res
-            }
-        );
+    const mutationDeleteMany = useMutationHooks(
+        (data) => {
+            const {token, ...ids} = data
+            const res = UserService.deleteManyUser(ids, token)
+            return res
+        }
+    );
 
     const mutationDelete = useMutationHooks(
         (data) => {
@@ -60,7 +60,7 @@ const AdminUser = () => {
     );
 
     const getAllUsers = async () => {
-        const res = await UserService.getAllUser()
+        const res = await UserService.getAllUser(user?.access_token)
         return res
     }
 
@@ -92,7 +92,7 @@ const AdminUser = () => {
     const handleDetailsProduct = () => {
       setIsOpenDrawer(true)
     }
-        const handleDeleteManyUsers = (ids) => {
+    const handleDeleteManyUsers = (ids) => {
       mutationDeleteMany.mutate({ids: ids, token: user?.access_token}, {
         onSettled: () =>
           queryUser.refetch()
