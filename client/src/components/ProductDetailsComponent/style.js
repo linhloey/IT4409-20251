@@ -19,6 +19,18 @@ export const WrapperStyleNameProduct = styled.h1`
     word-break: break-word;
 `
 
+export const WrapperImage = styled.div`
+    width: 100%; 
+    aspect-ratio: 1 / 1; 
+    border: 1px solid #efefef;
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    background: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+`
+
 export const WrapperStyleTextSell = styled.span`
     color: rgb(120, 120, 120);
     font-size: 15px;

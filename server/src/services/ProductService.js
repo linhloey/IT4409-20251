@@ -95,44 +95,6 @@ const deleteManyProduct = (ids) => {
   });
 };
 
-// const getAllProduct = (limit, page, sort, filter) => {
-//     return new Promise(async (resolve, reject) => {
-//         try {
-//             const totalProduct = await Product.countDocuments(); 
-//             let allProduct = []
-
-//             if (filter) {
-//                 const label = filter[0];
-//                 allProduct = await Product.find({ [label]: { '$regex': filter[1] } })
-//                     .limit(limit)
-//                     .skip(page * limit);
-//             } else if (sort) {
-//                 const objectSort = {};
-//                 objectSort[sort[1]] = sort[0];
-//                 allProduct = await Product.find()
-//                     .limit(limit)
-//                     .skip(page * limit)
-//                     .sort(objectSort);
-//             } else {
-//                 allProduct = await Product.find()
-//                     .limit(limit)
-//                     .skip(page * limit)
-//                     .sort({ createdAt: -1, updatedAt: -1 }); // Sắp xếp theo ngày mới nhất
-//             }
-//             resolve({
-//                 status: "OK",
-//                 message: "SUCCESS",
-//                 data: allProduct,
-//                 total: totalProduct,
-//                 pageCurrent: Number(page + 1),
-//                 totalPage: Math.ceil(totalProduct / limit),
-//             });
-//         } catch (e) {
-//             reject(e);
-//         }
-//     });
-// };
-
 const getAllProduct = (limit, page, sort, filter) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -206,6 +168,65 @@ const getDetailsProduct = (id) => {
   });
 };
 
+const getAllProductType = (type, limit, page) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const totalProduct = await Product.countDocuments({ type })
+            const allProduct = await Product.find({ type })
+                .limit(limit)
+                .skip(page * limit)
+            
+            resolve({
+                status: 'OK',
+                message: 'Success',
+                data: allProduct,
+                total: totalProduct,
+                pageCurrent: Number(page + 1),
+                totalPage: Math.ceil(totalProduct / limit)
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const getProductType = (type, limit, page) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const totalProduct = await Product.countDocuments({ type });
+            const allProductType = await Product.find({ type })
+                .limit(limit)
+                .skip(page * limit);
+
+            resolve({
+                status: 'OK',
+                message: 'Success',
+                data: allProductType,
+                total: totalProduct,
+                pageCurrent: Number(page + 1),
+                totalPage: Math.ceil(totalProduct / limit),
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+const getAllType = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const allType = await Product.distinct('type'); 
+            resolve({
+                status: 'OK',
+                message: 'Success',
+                data: allType
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
 module.exports = {
   createProduct,
   updateProduct,
@@ -213,4 +234,7 @@ module.exports = {
   deleteProduct,
   getAllProduct,
   deleteManyProduct,
+  getAllProductType,
+  getAllType,
+  getProductType
 };

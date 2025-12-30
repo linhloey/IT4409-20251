@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Col, Image, Rate, Row } from 'antd'
 import imageProduct from '../../assets/images/test.webp'
 import imageProductSmall from '../../assets/images/imagesmall.webp'
-import { WrapperStyleImageSmall, WrapperStyleColSmall, WrapperStyleNameProduct, WrapperStyleTextSell, WrapperPriceProduct, WrapperPriceTextProduct, WrapperAddressProduct, WrapperQualityProduct, WrapperInputNumber, WrapperPriceDiscountContainer, WrapperOriginalPriceText,WrapperDiscountText } from './style'
+import { WrapperStyleImageSmall, WrapperStyleColSmall, WrapperStyleNameProduct, WrapperStyleTextSell, WrapperPriceProduct, WrapperPriceTextProduct, WrapperAddressProduct, WrapperQualityProduct, WrapperInputNumber, WrapperPriceDiscountContainer, WrapperOriginalPriceText,WrapperDiscountText, WrapperImage } from './style'
 import { StarFilled, PlusOutlined, MinusOutlined } from '@ant-design/icons'
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import * as ProductService from '../../services/ProductService';
@@ -14,11 +14,11 @@ import { addOrderProduct } from '../../redux/slices/orderSlide'
 
 const ProductDetailsComponent = ({idProduct}) => {
     const [numProduct, setNumProduct] = useState(1)
+    const [currentImage, setCurrentImage] = useState('')
     const user = useSelector((state) => state.user)
     const navigate = useNavigate()
     const location = useLocation()
     const dispatch = useDispatch()
-
 
     const onChange = (value) => {
         setNumProduct(Number(value))
@@ -32,35 +32,24 @@ const ProductDetailsComponent = ({idProduct}) => {
         }
     }
 
-
-    
     const handleChangeCount = (type) => {
         if(type === 'increase') {
             setNumProduct(numProduct+1)
         } else {
-            setNumProduct(numProduct-1)
+            if (numProduct > 1) setNumProduct(numProduct - 1)
         }
     }
 
-
-
-    const { isLoading, data: productDetails} = useQuery({ queryKey: ['products-details', idProduct], queryFn: fetchGetDetailsProduct, enabled: !!idProduct })
+    const { isLoading, data: productDetails} = useQuery({ 
+        queryKey: ['products-details', idProduct], 
+        queryFn: fetchGetDetailsProduct, 
+        enabled: !!idProduct 
+    })
 
         const handleAddOrderProduct = () => {
         if(!user?.id) {
             navigate('/sign-in', {state: location?.pathname})
         }else{
-            // {  
-            //     name: { type: String, required: true },  
-            //     amount: { type: Number, required: true },  
-            //     image: { type: String, required: true },  
-            //     price: {type: Number, required: true },  
-            //     product: {  
-            //     type: mongoose.Schema.Types.ObjectId,  
-            //     ref: 'Product',  
-            //     required: true,
-            //     },
-            // },
             dispatch(addOrderProduct({
                 orderItem: {
                     name: productDetails?.name,
@@ -80,7 +69,13 @@ const priceAfterDiscount = productDetails?.price - (productDetails?.price * (pro
     <Loading isLoading={isLoading}>
         <Row style={{ padding: '16px', background: '#fff', borderRadius: '4px' }}>
             <Col span={10} style={{ borderRight: '1px solid #e5e5e5', paddingRight: '8px' }}>
-                <Image src={productDetails?.image} alt="image product" preview={false} />
+                <WrapperImage>
+                    <Image 
+                    src={currentImage || productDetails?.image} 
+                    alt="image product" preview={true}
+                    style={{ width: '100%', height: '400px', objectFit: 'contain' }}
+                     />
+                </WrapperImage>
                 <Row style={{ paddingTop: '10px', justifyContent: 'space-between' }}>
                     <WrapperStyleColSmall span={4}>
                         <WrapperStyleImageSmall src={imageProductSmall} alt="image small" preview={false} />

@@ -7,6 +7,11 @@ export const WrapperTypeProduct = styled.div`
   gap: 24px;
   justify-content: flex-start;
   height: 44px;
+  background-color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  border-bottom: 1px solid #e5e5e5; 
+  padding: 0 10px;
 `;
 
 export const WrapperButtonMore = styled(ButtonComponent)`

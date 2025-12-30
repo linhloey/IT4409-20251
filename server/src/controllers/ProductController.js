@@ -116,6 +116,35 @@ const getAllProduct = async (req, res) => {
   }
 };
 
+const getProductType = async (req, res) => {
+    try {
+        const { type, limit, page } = req.query; 
+        if (!type) {
+            return res.status(200).json({
+                status: "ERR",
+                message: "The type is required",
+            });
+        }
+        const response = await ProductService.getProductType(type, Number(limit) || 10, Number(page) || 0);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e.message || e,
+        });
+    }
+};
+
+const getAllType = async (req, res) => {
+    try {
+        const response = await ProductService.getAllType();
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e.message || e,
+        });
+    }
+};
+
 module.exports = {
   createProduct,
   updateProduct,
@@ -123,4 +152,6 @@ module.exports = {
   deleteProduct,
   getAllProduct,
   deleteMany,
+  getProductType,
+  getAllType
 };

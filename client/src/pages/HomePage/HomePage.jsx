@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import TypeProduct from "../../components/TypeProduct/TypeProduct";
 import { WrapperButtonMore, WrapperProducts, WrapperTypeProduct } from "./style";
 import SliderComponent from "../../components/SliderComponent/SliderComponent";
@@ -12,15 +12,27 @@ import * as ProductService from '../../services/ProductService'
 import { useSelector } from "react-redux";
 import Loading from "../../components/LoadingComponent/Loading";
 import { useDebounce } from "../../hooks/useDebounce";
-
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
   const searchProduct = useSelector((state) => state.product?.search);
   const searchDebounce = useDebounce(searchProduct, 1000)
+  const navigate = useNavigate()
+  const [typeProducts, setTypeProducts] = useState([])
   const [loading, setLoading] = useState(false);
   const [limit, setLimit] = useState(6);
-  // const [stateProducts, setStateProducts] = useState([]);
-    const arr = ["TV", "Tu lanh", "Laptop"];
+
+  const fetchAllTypeProduct = async () => {
+    const res = await ProductService.getAllTypeProduct()
+    if(res?.status === 'OK') {
+      setTypeProducts(res?.data)
+    }
+  }
+
+  useEffect(() => {
+    fetchAllTypeProduct()
+  }, [])
+
     const fetchProductAll = async (context) => {
       const limit = context?.queryKey && context?.queryKey[1]
       const search = context?.queryKey && context?.queryKey[2]
@@ -28,23 +40,21 @@ const HomePage = () => {
       return res
     }
 
-   const { isLoading, data: products, isPreviousData } = useQuery({
+   const { isLoading, data: products} = useQuery({
       queryKey: ['products', limit, searchDebounce],
       queryFn: fetchProductAll,
       retry: 3,
       retryDelay: 1000,
       placeholderData: keepPreviousData
-})
+  })
 
     return (
       <Loading isLoading={isLoading || loading}>
         <div style={{ width: '1270px', margin: '0 auto' }}>
         <WrapperTypeProduct>
-          {arr.map((item) => {
-          return (
+          {typeProducts.map((item) => (
             <TypeProduct name={item} key={item} />
-          )
-          })}
+          ))}
         </WrapperTypeProduct>
         </div>
         <div className="body" style={{ width: '100%', backgroundColor: '#efefef' }}>
