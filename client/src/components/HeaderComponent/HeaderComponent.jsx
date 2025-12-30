@@ -9,6 +9,7 @@ import * as UserService from '../../services/UserService'
 import { resetUser } from '../../redux/slices/userSlice'
 import Loading from '../LoadingComponent/Loading'
 import { searchProduct } from '../../redux/slices/productSlide'
+import { clearOrder } from '../../redux/slices/orderSlide'
 
 const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
   const navigate = useNavigate()
@@ -29,7 +30,9 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
     await UserService.logoutUser()
     localStorage.removeItem('access_token')
     dispatch(resetUser())
+    dispatch(clearOrder())
     setLoading(false)
+    navigate('/')
   }
 
   useEffect(() => {

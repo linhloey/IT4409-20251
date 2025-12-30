@@ -16,7 +16,6 @@ const authMiddleware = (req, res, next) => {
         status: "ERR",
       })
     }
-    // const { payload } = user;
     if (user?.isAdmin) {
       next();
     } else {
@@ -30,7 +29,7 @@ const authMiddleware = (req, res, next) => {
 
 const authUserMiddleware = (req, res, next) => {
     const token = req.headers.token?.split(" ") [1]
-    const userID = req.params.id
+    const userID = req.params.id || req.body.user;
 
     if (!token) {
     return res.status(401).json({ message: "Token is required", status: "ERR" });
@@ -43,8 +42,7 @@ const authUserMiddleware = (req, res, next) => {
             status: "ERR",
           });
         }
-// const { payload } = user
-    if (user?.isAdmin || user?.id === userID) {
+    if (user?.isAdmin || user?.id === userID || req.path === '/create') {
         next();
         } else {
           return res.status(403).json({ 

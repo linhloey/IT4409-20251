@@ -52,6 +52,15 @@ const SignUpPage = () => {
 	}
 
 	const handleSignUp = () => {
+		const gmailRegex = /^[a-z0-9.]+@gmail\.com$/;
+		if (!gmailRegex.test(email)) {
+        message.error("Email không đúng định dạng (ví dụ đúng: abc@gmail.com)");
+        return; 
+    }
+	if (password !== confirmPassword) {
+        message.error("Mật khẩu và xác nhận mật khẩu không trùng khớp!");
+        return; 
+    }
 		mutation.mutate({ email, password, confirmPassword })
 	}
 
@@ -105,7 +114,7 @@ const SignUpPage = () => {
 						{data?.status === 'ERR' && <span style={{ color: 'red' }}>{data?.message}</span>}
 						<Loading isLoading={isPending}>
 							<ButtonComponent
-								disabled={!email.length || !password.length || !confirmPassword.length}
+								disabled={!email.includes('@gmail.com') || password !== confirmPassword || !password.length || !confirmPassword.length}
 								onClick={handleSignUp}
 								size="large"
 								styleButton={{ 

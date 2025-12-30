@@ -24,28 +24,20 @@ const AdminProduct = () => {
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
 
+    const inittial = () => ({
+      name: '',
+      type: '',
+      countInStock: '',
+      price: '',
+      rating: '',
+      description: '',
+      image: '',
+      discount: ''
+    })
     const user = useSelector((state) => state?.user)
-    const [stateProduct, setStateProduct] = useState({
-        name: '',
-        type: '',
-        countInStock: '',
-        price: '',
-        rating: '',
-        description: '',
-        image: '',
-        discount: ''
-    });
+    const [stateProduct, setStateProduct] = useState(inittial());
 
-    const [stateProductDetails, setStateProductDetails] = useState({
-        name: '',
-        type: '',
-        countInStock: '',
-        price: '',
-        rating: '',
-        description: '',
-        image: '',
-        discount: ''
-    });
+    const [stateProductDetails, setStateProductDetails] = useState(inittial());
 
     const [form] = Form.useForm();
 
@@ -107,8 +99,12 @@ const AdminProduct = () => {
     }
 
     useEffect(() => {
-      form.setFieldsValue(stateProductDetails)
-    }, [form, stateProductDetails])
+      if(!isModalOpen) {
+        form.setFieldsValue(stateProductDetails)
+      } else {
+        form.setFieldsValue(inittial())
+      }
+    }, [form, stateProductDetails, isModalOpen])
 
     useEffect(() => {
       if(rowSelected && isOpenDrawer) {
@@ -362,7 +358,6 @@ const AdminProduct = () => {
           queryProduct.refetch()
         }
       });
-      console.log('check data:', stateProduct)
     };
 
     const handleOnchange = (e) => {

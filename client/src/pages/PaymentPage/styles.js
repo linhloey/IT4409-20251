@@ -98,10 +98,10 @@ export const WrapperRadio = styled(Radio.Group)`
   margin-top: 6px;
   width: 500px;
   background: rgb(240, 248, 255);
-  border: 1px solid rgb(194, 225, 255)
+  border: 1px solid rgb(194, 225, 255);
   padding: 16px;
   border-radius: 4px;
   font-weight: normal;
   height: 100px;
-  justijy-content: center;
+  justify-content: center;
 `

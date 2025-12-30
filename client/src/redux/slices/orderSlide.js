@@ -22,11 +22,15 @@ export const orderSlide = createSlice({
   name: "order",
   initialState,
   reducers: {
+    setOrderItems: (state, action) => {
+      state.orderItems = action.payload || [];
+    },
+
     addOrderProduct: (state, action) => {
       const { orderItem } = action.payload
       const itemOrder = state?.orderItems?.find((item) => item?.product === orderItem.product)
       if (itemOrder) {
-        itemOrder.amount = orderItem?.amount
+        itemOrder.amount += orderItem?.amount
       } else {
         state.orderItems.push(orderItem)
       }
@@ -39,13 +43,21 @@ export const orderSlide = createSlice({
     decreaseAmount: (state, action) => {
       const { idProduct } = action.payload
       const itemOrder = state?.orderItems?.find((item) => item?.product === idProduct)
-      itemOrder.amount--
+      if (itemOrder && itemOrder.amount > 1) {
+        itemOrder.amount--;
+      }
     },
     removeOrderProduct: (state, action) => {
       const { idProduct } = action.payload
       state.orderItems = state.orderItems.filter(
         (item) => item.product !== idProduct
       )
+    },
+    removeManyOrderProduct: (state, action) => {
+      const { listChecked } = action.payload; // Mảng các ID sản phẩm đã mua
+      state.orderItems = state.orderItems.filter(
+        (item) => !listChecked.includes(item.product)
+      );
     },
     clearOrder: (state) => {
       state.orderItems = []
@@ -55,11 +67,12 @@ export const orderSlide = createSlice({
       state.shippingPrice = 0
       state.taxPrice = 0
       state.totalPrice = 0
+      state.user = '';
     }
 
   },
 });
 
-export const { addOrderProduct, increaseAmount, decreaseAmount, removeOrderProduct, clearOrder } = orderSlide.actions;
+export const { addOrderProduct, increaseAmount, decreaseAmount, removeOrderProduct, clearOrder, setOrderItems, removeManyOrderProduct } = orderSlide.actions;
 
 export default orderSlide.reducer;

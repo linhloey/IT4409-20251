@@ -188,6 +188,25 @@ const getDetailsUser = (id) => {
   });
 }
 
+const updateCart = (id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const updatedUser = await User.findByIdAndUpdate(
+                id, 
+                { cart: data }, 
+                { new: true }
+            );
+            resolve({
+                status: 'OK',
+                message: 'Update cart success',
+                data: updatedUser.cart
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
 module.exports = {  
     createUser,
     loginUser,
@@ -196,4 +215,5 @@ module.exports = {
     getAllUser,
     getDetailsUser,
     deleteManyUser,
+    updateCart
 } 

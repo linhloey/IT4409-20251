@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo  } from 'react'
 import { Checkbox, Image, InputNumber, Divider, Form, Button } from 'antd'
 import { CloseOutlined } from '@ant-design/icons'
 import { useSelector, useDispatch } from 'react-redux'
@@ -30,6 +30,12 @@ const OrderPage = () => {
     address: '',
     city:''
   });
+
+  useEffect(() => {
+    if (user?.id && user?.access_token) {
+        UserService.updateCart(user.id, order.orderItems, user.access_token)
+    }
+}, [order.orderItems, user?.id, user?.access_token])
 
   useEffect(() => {
     form.setFieldsValue(stateUserDetails)
@@ -66,33 +72,45 @@ const OrderPage = () => {
   const handleDec = (id) => dispatch(decreaseAmount({ idProduct: id }))
   const handleRemove = (id) => dispatch(removeOrderProduct({ idProduct: id }))
 
-  // Tính tổng tiền gốc (chưa trừ discount)
-  const priceRaw = items
-    .filter(i => checkedItems.includes(i.product))
-    .reduce((total, item) => total + (Number(item.price || 0) * Number(item.amount || 0)), 0)
-  // Tính tổng số tiền được giảm (tiền tiết kiệm)
-  const totalDiscount = items
-    .filter(i => checkedItems.includes(i.product))
-    .reduce((total, item) => {
-      const discountMoney = (Number(item.price) * (Number(item.discount || 0) / 100)) * Number(item.amount)
-      return total + discountMoney
+  const { priceRaw, totalDiscount } = useMemo(() => {
+    const selectedItems = items.filter(item => checkedItems.includes(item.product))
+    const raw = selectedItems.reduce((total, item) => total + (Number(item.price || 0) * Number(item.amount || 0)), 0)
+    const discount = selectedItems.reduce((total, item) => {
+      return total + (Number(item.price) * (Number(item.discount || 0) / 100) * Number(item.amount))
     }, 0)
-  // Tổng tiền cuối cùng khách phải trả
-  const totalPrice = priceRaw - totalDiscount
+    return { priceRaw: raw, totalDiscount: discount }
+  }, [items, checkedItems])
+
+  // 2. Tổng tiền tạm tính sau khi giảm giá (để tính phí ship)
+  const subTotalPrice = priceRaw - totalDiscount
+
+  // 3. Tính phí giao hàng dựa trên tổng tiền tạm tính
+  const deliveryPrice = useMemo(() => {
+    if (subTotalPrice === 0 || checkedItems.length === 0) return 0
+    if (subTotalPrice >= 5000000) return 0       // Trên 5 triệu: Miễn phí
+    if (subTotalPrice >= 1000000) return 20000   // Từ 1 triệu đến dưới 5 triệu: 20k
+    return 30000                                 // Dưới 1 triệu: 30k
+  }, [subTotalPrice, checkedItems])
+
+  // 4. Tổng tiền cuối cùng (Giá đã giảm + Phí ship)
+  const totalPrice = subTotalPrice + deliveryPrice
 
   const handleCheckout = () => {
+    if (!user?.id) {
+      navigate('/sign-in')
+      return
+    }
     if (!checkedItems.length) {
       Message.error('Vui lòng chọn sản phẩm để thanh toán')
       return
     }
-    // if (!user?.id) {
-    //   navigate('/sign-in')
-    //   return
-    // }
     if (!user?.id || !user?.address || !user?.name || !user?.city) {
       setIsModalOpenUpdateAInfo(true)
+    } else {
+      navigate('/payment', {
+        state: { checkedItems: checkedItems }
+      })
     }
-    navigate('/payment')
     // checkedItems.forEach(id => dispatch(removeOrderProduct({ idProduct: id })))
     // setCheckedItems([])
     // Message.success('Thanh toán thành công')
@@ -193,11 +211,15 @@ const OrderPage = () => {
         </OrderList>
 
         <Summary>
-          <h3 style={{ margin: 0 }}>Thanh toán</h3>
-          <div style={{marginTop: '4px', fontSize: 14}}>
-            <span>Địa chỉ: </span>
-            <span style={{color: 'blue'}}>{`${user?.address} ${user?.city}`}</span>
-            <span onClick={handleChangeAddress} style={{color: 'red', cursor: 'pointer'}}>Thay đổi</span>
+          <h3 style={{ margin: '0 0 12px', fontSize: '18px', fontWeight: '600' }}>Tóm tắt đơn hàng</h3>
+          <div style={{ background: '#fcfcfc', padding: '12px',  border: '1px solid #f0f0f0',  borderRadius: '6px', marginBottom: '16px'}}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+              <span style={{ fontSize: '14px', color: '#888' }}>Địa chỉ: </span>
+              <span onClick={handleChangeAddress} style={{color: '#0b74e5', cursor: 'pointer', fontSize: '13px', fontWeight: '500'}}>Thay đổi</span>
+            </div>
+            <div style={{ color: '#333',  fontSize: '15px',  fontWeight: '500',  wordBreak: 'break-word',lineHeight: '1.4' }}>
+              {`${user?.address} ${user?.city}`}
+            </div>
           </div>
           <Divider />
           <SummaryRow>
@@ -210,8 +232,11 @@ const OrderPage = () => {
           </SummaryRow>
           <SummaryRow>
             <span>Phí vận chuyển</span>
-            <span>Miễn phí</span>
+            <span style={{ color: deliveryPrice === 0 ? '#52c41a' : '#333', fontWeight: '500' }}>
+              {deliveryPrice === 0 ? 'Miễn phí' : `${deliveryPrice.toLocaleString()} đ`}
+            </span>
           </SummaryRow>
+
           <Divider />
           <SummaryRow style={{ fontSize: 18 }}>
             <span>Tổng tiền</span>

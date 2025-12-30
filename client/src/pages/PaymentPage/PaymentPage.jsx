@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { Checkbox, Image, InputNumber, Divider, Form, Button, message, Radio } from 'antd'
-import { CloseOutlined } from '@ant-design/icons'
+import { Divider, Form, message, Radio } from 'antd'
 import { useSelector, useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import * as Message from '../../components/Message/Message'
 import ButtonComponent from '../../components/ButtonComponent/ButtonComponent'
 import { WrapperOrder, HeaderOrder, Content, OrderList, OrderItem, ProductInfo, ProductName, ProductPrice, Summary, SummaryRow, Label, ActionsRow, WrapperRadio } from './styles'
@@ -13,17 +12,21 @@ import * as UserService from '../../services/UserService'
 import * as OrderService from '../../services/OrderService'
 import Loading from '../../components/LoadingComponent/Loading'
 import { updateUser } from '../../redux/slices/userSlice'
-import { clearOrder } from '../../redux/slices/orderSlide'
+import { clearOrder, removeManyOrderProduct } from '../../redux/slices/orderSlide'
 
 const PaymentPage = () => {
+
+  const location = useLocation();
+  const checkedItemsFromOrder = location?.state?.checkedItems || [];
+
   const [isModalOpenUpdateAInfo, setIsModalOpenUpdateAInfo] = useState(false)
   const [payment, setPayment] = useState('COD')
-  const [delivery, setDelivery] = useState('COD')
+  const [delivery, setDelivery] = useState('')
+
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const order = useSelector((state) => state.order)
   const user = useSelector((state) => state.user)
-  const items = order?.orderItems || []
 
   const [form] = Form.useForm()
 
@@ -47,62 +50,34 @@ const PaymentPage = () => {
         phone: user?.phone,
       })
     }
-  }, [isModalOpenUpdateAInfo])
+  }, [isModalOpenUpdateAInfo, user])
 
   const handleChangeAddress = () => {
     setIsModalOpenUpdateAInfo(true)
   }
 
-  const [checkedItems, setCheckedItems] = useState(order?.orderItems?.map(i => i.product) || [])
+  const orderItemsToPay = useMemo(() => {
+    return order?.orderItems?.filter(item => checkedItemsFromOrder.includes(item.product))
+  }, [order?.orderItems, checkedItemsFromOrder])
 
-  // Tính tổng tiền gốc (chưa trừ discount)
-  const priceRaw = items
-    .filter(i => checkedItems.includes(i.product))
-    .reduce((total, item) => total + (Number(item.price || 0) * Number(item.amount || 0)), 0)
-  // Tính tổng số tiền được giảm (tiền tiết kiệm)
-  const totalDiscount = items
-    .filter(i => checkedItems.includes(i.product))
-    .reduce((total, item) => {
-      const discountMoney = (Number(item.price) * (Number(item.discount || 0) / 100)) * Number(item.amount)
-      return total + discountMoney
+  // Tính tổng tiền gốc (chưa trừ discount) và số tiền discount
+  const { priceRaw, totalDiscount } = useMemo(() => {
+    const raw = orderItemsToPay.reduce((total, item) => total + (Number(item.price || 0) * Number(item.amount || 0)), 0)
+    const discount = orderItemsToPay.reduce((total, item) => {
+      return total + (Number(item.price) * (Number(item.discount || 0) / 100) * Number(item.amount))
     }, 0)
+    return { priceRaw: raw, totalDiscount: discount }
+  }, [orderItemsToPay])
   // Tổng tiền cuối cùng khách phải trả
-  const totalPrice = priceRaw - totalDiscount
+  const subTotalPrice = priceRaw - totalDiscount
 
   const deliveryPrice = useMemo(() => {
-    if (totalPrice > 1000000) {
-      return 10000
-    } else if (totalPrice === 0) {
-      return 0
-    } else {
-      return 20000
-    }
+    if (subTotalPrice === 0 || subTotalPrice >= 5000000) return 0     // Trên 5 triệu: Miễn phí
+    if (subTotalPrice >= 1000000) return 20000   // Từ 1 triệu đến dưới 5 triệu: 20k
+    return 30000
   })
 
-  const handleCheckout = () => {
-    if (user?.access_token && order?.orderItems && user?.name && user?.address && user?.phone && user?.city && priceRaw && user?.id) {
-      mutationAddOrder.mutate(
-        {
-          token: user?.access_token,
-          orderItems: order?.orderItems,
-          fullName: user?.name,
-          address: user?.address,
-          phone: user?.phone,
-          city: user?.city,
-          paymentMethod: payment,
-          itemsPrice: priceRaw,
-          shippingPrice: deliveryPrice,
-          totalPrice: totalPrice,
-          user: user?.id
-        },
-        // {
-        // onSuccess: () => {
-        //     message.success('Thanh toán thành công')
-        // }
-        // }
-      )
-    }
-  }
+  const totalPrice = subTotalPrice + deliveryPrice
 
   const mutationUpdate = useMutationHooks(
     (data) => {
@@ -120,18 +95,49 @@ const PaymentPage = () => {
     }
   );
 
-  const { isPending, data } = mutationUpdate
+  const { isPending } = mutationUpdate
   const { data: dataAdd, isPending: isPendingAddOrder, isSuccess, isError } = mutationAddOrder
 
   useEffect(() => {
     if (isSuccess && dataAdd?.status === 'OK') {
       message.success('Đặt hàng thành công')
-      dispatch(clearOrder())
+      dispatch(removeManyOrderProduct({ listChecked: checkedItemsFromOrder }));
       navigate('/my-order')
     } else if (isError) {
       message.error('Đặt hàng thất bại')
     }
   }, [isSuccess, isError, dataAdd])
+
+  const handleCheckout = () => {
+    if (!delivery) {
+      message.error('Vui lòng chọn phương thức giao hàng')
+      return
+    }
+    if (user?.access_token && order?.orderItems && user?.name && user?.address && user?.phone && user?.city && priceRaw && user?.id) {
+      mutationAddOrder.mutate(
+        {
+          token: user?.access_token,
+          orderItems: orderItemsToPay,
+          fullName: user?.name,
+          address: user?.address,
+          phone: user?.phone,
+          city: user?.city,
+          paymentMethod: payment,
+          itemsPrice: priceRaw,
+          shippingPrice: deliveryPrice,
+          totalPrice: totalPrice,
+          user: user?.id
+        }, 
+        // {
+        // onSuccess: () => {
+        //     message.success('Thanh toán thành công')
+        // }
+        // }
+      )
+    } else if (!orderItemsToPay?.length) {
+        Message.error('Không có sản phẩm nào được chọn để thanh toán')
+    }
+  }
 
   const handleCancelUpdate = () => {
     setStateUserDetails({
@@ -232,7 +238,7 @@ const PaymentPage = () => {
               <ButtonComponent
                 onClick={handleCheckout}
                 size="large"
-                textButton="Thanh toán"
+                textButton="Đặt hàng"
                 styleButton={{ width: '100%', background: 'rgb(26, 148, 255)', borderRadius: 4, height: 44, border: 'none' }}
                 styleTextButton={{ color: '#fff', fontWeight: 700 }}
               />

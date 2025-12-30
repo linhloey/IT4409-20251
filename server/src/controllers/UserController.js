@@ -185,6 +185,23 @@ const logoutUser = async (req, res) => {
   }
 };
 
+const updateCart = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const data = req.body.cart; 
+    if (!userId) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "The userId is required",
+      });
+    }
+    const response = await UserService.updateCart(userId, data);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({ message: e.message });
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -195,4 +212,5 @@ module.exports = {
   refreshToken,
   logoutUser,
   deleteMany,
+  updateCart
 };

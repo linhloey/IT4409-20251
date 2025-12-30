@@ -12,6 +12,7 @@ import Loading from '../../components/LoadingComponent/Loading'
 import { jwtDecode } from "jwt-decode"
 import { useDispatch } from 'react-redux'
 import { updateUser } from '../../redux/slices/userSlice'
+import { setOrderItems } from '../../redux/slices/orderSlide'
 
 const SignInPage = () => {
 	const navigate = useNavigate()
@@ -28,7 +29,7 @@ const SignInPage = () => {
 	const { data, isPending, isSuccess } = mutation
 
 	useEffect(() => {
-		if (isSuccess) {
+		if (isSuccess && data?.status === 'OK') {
 			if(location?.state){
 				navigate(location?.state)
 			}else{
@@ -42,14 +43,16 @@ const SignInPage = () => {
 				}
 			}
 		}
-	}, [isSuccess])
+	}, [isSuccess, data])
 
 	const handleGetDetailsUser = async (id, token) => {
 		const res = await UserService.getDetailsUser(id, token)
 		dispatch(updateUser({...res?.data, access_token: token}))
-	}
 
-	console.log('mutation', mutation)
+		if (res?.data?.cart) {
+        	dispatch(setOrderItems(res?.data?.cart)); 
+	    }
+	}
 
 	const handleOnChangeEmail = (value) => {
 		setEmail(value)
@@ -68,7 +71,6 @@ const SignInPage = () => {
 			email,
 			password
 		})
-		console.log('sign-in', email, password)
 	}
 
 	return (

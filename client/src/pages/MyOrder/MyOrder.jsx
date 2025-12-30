@@ -64,7 +64,6 @@ const MyOrder = () => {
 
     const handleViewDetails = (orderId) => {
         message.info('Chi tiết đơn hàng: ' + orderId);
-        // You can navigate to a details page or open a modal here
     };
 
     const orders = ordersData?.data || [];
