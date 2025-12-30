@@ -4,25 +4,8 @@ import { useSelector } from 'react-redux';
 import { Button, Image, message } from 'antd';
 import * as OrderService from '../../services/OrderService';
 import Loading from '../../components/LoadingComponent/Loading';
-import {
-    WrapperContainer,
-    WrapperHeader,
-    WrapperOrderList,
-    WrapperOrderCard,
-    WrapperOrderHeader,
-    WrapperOrderContent,
-    WrapperProductItem,
-    WrapperProductInfo,
-    WrapperProductImage,
-    WrapperProductDetails,
-    WrapperProductName,
-    WrapperProductPrice,
-    WrapperOrderFooter,
-    WrapperOrderSummary,
-    WrapperOrderActions,
-    WrapperEmptyOrders,
-    WrapperStatus,
-    WrapperPaymentStatus
+import { WrapperContainer, WrapperHeader, WrapperOrderList, WrapperOrderCard, WrapperOrderHeader, WrapperOrderContent, WrapperProductItem, WrapperProductInfo, WrapperProductImage, 
+    WrapperProductDetails, WrapperProductName, WrapperProductPrice, WrapperOrderFooter, WrapperOrderSummary, WrapperOrderActions, WrapperEmptyOrders, WrapperStatus, WrapperPaymentStatus
 } from './styles';
 import { useMutationHooks } from '../../hooks/useMutationHook';
 
@@ -69,14 +52,19 @@ const MyOrder = () => {
     const orders = ordersData?.data || [];
 
     const getPaymentStatus = (order) => {
-        if (order.isPaid) {
-            return { text: 'Đã thanh toán', status: 'paid' };
-        } else if (order.paymentMethod === 'COD') {
-            return { text: 'Chưa thanh toán (COD)', status: 'unpaid' };
-        } else {
-            return { text: 'Chưa thanh toán', status: 'unpaid' };
-        }
-    };
+    if (order.isPaid) {
+        return { 
+            text: `Đã thanh toán (${new Date(order.paidAt).toLocaleDateString('vi-VN')})`, 
+            status: 'paid' 
+        };
+    } 
+    // Nếu chưa thanh toán nhưng dùng phương thức PayPal
+    if (order.paymentMethod === 'paypal') {
+        return { text: 'Chưa thanh toán (Paypal)', status: 'unpaid' };
+    }
+    // Thanh toán khi nhận hàng
+    return { text: 'Thanh toán khi nhận hàng (COD)', status: 'pending' };
+};
 
     const getDeliveryStatus = (order) => {
         if (order.isDelivered) {

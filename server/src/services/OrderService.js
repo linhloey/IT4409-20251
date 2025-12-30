@@ -2,7 +2,7 @@ const Order = require("../models/OrderProduct");
 
 const createOrder = (newOrder) => {
   return new Promise(async (resolve, reject) => {
-    const { orderItems, paymentMethod, itemsPrice, shippingPrice, totalPrice, fullName, address, city, phone, user } = newOrder;
+    const { orderItems, paymentMethod, itemsPrice, shippingPrice, totalPrice, fullName, address, city, phone, user, isPaid, paidAt } = newOrder;
     try {
       const createdOrder = await Order.create({
         orderItems,
@@ -16,7 +16,9 @@ const createOrder = (newOrder) => {
         itemsPrice,
         shippingPrice,
         totalPrice,
-        user: user
+        user: user,
+        isPaid,
+        paidAt
       });
       if (createdOrder) {
         resolve({
@@ -66,6 +68,13 @@ const cancelOrder = (orderId) => {
           message: "Cannot cancel delivered order",
         });
         return;
+      }
+
+      if (order.isPaid) {
+        return resolve({ 
+            status: "ERR", 
+            message: "Đơn hàng đã thanh toán, vui lòng liên hệ Admin để hoàn tiền" 
+        });
       }
 
       await Order.findByIdAndDelete(orderId);
