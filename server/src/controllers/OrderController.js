@@ -89,8 +89,61 @@ const cancelOrder = async (req, res) => {
   }
 };
 
+const getAllOrders = async (req, res) => {
+  try {
+    const response = await OrderService.getAllOrders();
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
+const updateOrder = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const data = req.body;
+    if (!orderId) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "Order ID is required",
+      });
+    }
+
+    const response = await OrderService.updateOrder(orderId, data);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
+const deleteOrder = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    if (!orderId) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "Order ID is required",
+      });
+    }
+
+    const response = await OrderService.deleteOrder(orderId);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
 module.exports = {
   createOrder,
   getAllOrderByUser,
-  cancelOrder
+  cancelOrder,
+  getAllOrders,
+  updateOrder,
+  deleteOrder
 };

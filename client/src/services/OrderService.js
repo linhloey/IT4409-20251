@@ -44,3 +44,30 @@ export const cancelOrder = async (orderId, access_token) => {
     })
     return res.data
 }
+
+export const getAllOrders = async (access_token) => {
+    const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/order/get-all`, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    })
+    return res.data
+}
+
+export const updateOrder = async (orderId, data, access_token) => {
+    const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/order/update/${orderId}`, data, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    })
+    return res.data
+}
+
+export const deleteOrder = async (orderId, access_token) => {
+    const res = await axiosJWT.delete(`${process.env.REACT_APP_API_URL}/order/delete/${orderId}`, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    })
+    return res.data
+}

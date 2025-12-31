@@ -123,8 +123,77 @@ const cancelOrder = (orderId) => {
   });
 }
 
+const getAllOrders = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const orders = await Order.find()
+        .populate('user', 'name email')
+        .sort({ createdAt: -1 });
+      if (orders) {
+        resolve({
+          status: "OK",
+          message: "SUCCESS",
+          data: orders,
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+const updateOrder = (orderId, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const checkOrder = await Order.findById(orderId);
+      if (!checkOrder) {
+        resolve({
+          status: "ERR",
+          message: "Order not found",
+        });
+        return;
+      }
+
+      const updatedOrder = await Order.findByIdAndUpdate(orderId, data, { new: true });
+      resolve({
+        status: "OK",
+        message: "SUCCESS",
+        data: updatedOrder,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+const deleteOrder = (orderId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const checkOrder = await Order.findById(orderId);
+      if (!checkOrder) {
+        resolve({
+          status: "ERR",
+          message: "Order not found",
+        });
+        return;
+      }
+
+      await Order.findByIdAndDelete(orderId);
+      resolve({
+        status: "OK",
+        message: "Delete order successfully",
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
 module.exports = {
   createOrder,
   getAllOrderByUser,
-  cancelOrder
+  cancelOrder,
+  getAllOrders,
+  updateOrder,
+  deleteOrder
 } 
