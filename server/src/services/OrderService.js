@@ -1,16 +1,50 @@
 const Order = require("../models/OrderProduct");
 
+// const createOrder = (newOrder) => {
+//   return new Promise(async (resolve, reject) => {
+//     const { orderItems, paymentMethod, itemsPrice, shippingPrice, totalPrice, fullName, address, city, phone, user, isPaid, paidAt } = newOrder;
+//     try {
+//       const createdOrder = await Order.create({
+//         orderItems,
+//         shippingAddress: {
+//           fullName,
+//           address,
+//           city,
+//           phone
+//         },
+//         paymentMethod,
+//         itemsPrice,
+//         shippingPrice,
+//         totalPrice,
+//         user: user,
+//         isPaid,
+//         paidAt
+//       });
+//       if (createdOrder) {
+//         resolve({
+//           status: "OK",
+//           message: "SUCCESS",
+//           data: createdOrder,
+//         });
+//       }
+//     } catch (e) {
+//       reject(e);
+//     }
+//   });
+// }
+
 const createOrder = (newOrder) => {
   return new Promise(async (resolve, reject) => {
-    const { orderItems, paymentMethod, itemsPrice, shippingPrice, totalPrice, fullName, address, city, phone, user, isPaid, paidAt } = newOrder;
+    // Lấy shippingAddress thay vì lấy trực tiếp fullName, address...
+    const { orderItems, paymentMethod, itemsPrice, shippingPrice, totalPrice, shippingAddress, user, isPaid, paidAt } = newOrder;
     try {
       const createdOrder = await Order.create({
         orderItems,
         shippingAddress: {
-          fullName,
-          address,
-          city,
-          phone
+          fullName: shippingAddress.fullName,
+          address: shippingAddress.address,
+          city: shippingAddress.city,
+          phone: shippingAddress.phone
         },
         paymentMethod,
         itemsPrice,
@@ -20,6 +54,7 @@ const createOrder = (newOrder) => {
         isPaid,
         paidAt
       });
+      
       if (createdOrder) {
         resolve({
           status: "OK",

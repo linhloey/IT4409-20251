@@ -11,6 +11,7 @@ import { useMutationHooks } from '../../hooks/useMutationHook';
 
 const MyOrder = () => {
     const user = useSelector((state) => state.user);
+    const [cancelingId, setCancelingId] = useState(null);
 
     const fetchOrders = async () => {
         if (!user?.id || !user?.access_token) {
@@ -42,7 +43,10 @@ const MyOrder = () => {
     }, [isSuccess, isError, dataCanceled, refetch]);
 
     const handleCancelOrder = (orderId) => {
-        mutationCancel.mutate(orderId);
+        setCancelingId(orderId); // Lưu ID lại trước khi gọi mutate
+    mutationCancel.mutate(orderId, {
+        onSettled: () => setCancelingId(null) // Khi xong (thành công hoặc lỗi) thì reset về null
+    });
     };
 
     const handleViewDetails = (orderId) => {
@@ -157,7 +161,7 @@ const MyOrder = () => {
                                                     type="primary"
                                                     danger
                                                     onClick={() => handleCancelOrder(order._id)}
-                                                    loading={mutationCancel.isPending}
+                                                    loading={mutationCancel.isPending && cancelingId === order._id}
                                                 >
                                                     Hủy đơn
                                                 </Button>

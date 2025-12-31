@@ -1,13 +1,44 @@
 const OrderService = require("../services/OrderService");
 
+// const createOrder = async (req, res) => {
+//   try {
+//     const { paymentMethod, itemsPrice, shippingPrice, totalPrice, fullName, address, city, phone, isPaid, paidAt } = req.body;
+
+//     if (!paymentMethod || !itemsPrice || !shippingPrice || !totalPrice || !fullName || !address || !city || !phone) {
+//       return res.status(200).json({
+//         status: "ERR",
+//         message: "The input is required",
+//       });
+//     }
+
+//     const response = await OrderService.createOrder(req.body);
+//     return res.status(200).json(response);
+//   } catch (e) {
+//     return res.status(404).json({
+//       message: e.message,
+//     });
+//   }
+// };
+
 const createOrder = async (req, res) => {
   try {
-    const { paymentMethod, itemsPrice, shippingPrice, totalPrice, fullName, address, city, phone, isPaid, paidAt } = req.body;
+    const { paymentMethod, itemsPrice, shippingPrice, totalPrice, shippingAddress, user } = req.body;
 
-    if (!paymentMethod || !itemsPrice || !shippingPrice || !totalPrice || !fullName || !address || !city || !phone) {
+    // 1. Kiểm tra các trường root
+    // Lưu ý: Không dùng !shippingPrice vì nếu phí là 0 sẽ bị lỗi logic
+    if (!paymentMethod || itemsPrice === undefined || shippingPrice === undefined || !totalPrice || !user || !shippingAddress) {
       return res.status(200).json({
         status: "ERR",
-        message: "The input is required",
+        message: "The input is required (root fields)",
+      });
+    }
+
+    // 2. Kiểm tra các trường bên trong shippingAddress
+    const { fullName, address, city, phone } = shippingAddress;
+    if (!fullName || !address || !city || !phone) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "The shipping address information is required",
       });
     }
 

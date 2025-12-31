@@ -93,7 +93,7 @@ const PaymentPage = () => {
   const mutationAddOrder = useMutationHooks(
     (data) => {
       const { token, ...rests } = data
-      const res = OrderService.createOrder({ ...rests }, token)
+      const res = OrderService.createOrder(rests, token)
       return res
     }
   );
@@ -108,12 +108,15 @@ const PaymentPage = () => {
       setTimeout(() => {
         navigate('/my-order');
       }, 2000);
+    } else if (dataAdd?.status === 'ERR') {
+      message.error(dataAdd?.message || 'Đặt hàng thất bại');
     } else if (isError) {
-      message.error('Đặt hàng thất bại')
+      message.error('Lỗi kết nối Server');
     }
   }, [isSuccess, isError, dataAdd])
 
-  const handleCheckout = (isPaid = false) => {
+  const handleCheckout = (isPaidParam = false) => {
+    const isPaid = isPaidParam === true;
     if (!delivery) {
       message.error('Vui lòng chọn phương thức giao hàng')
       return
@@ -123,15 +126,17 @@ const PaymentPage = () => {
         {
           token: user?.access_token,
           orderItems: orderItemsToPay,
-          fullName: user?.name,
-          address: user?.address,
-          phone: user?.phone,
-          city: user?.city,
+          shippingAddress: {
+            fullName: user?.name,
+            address: user?.address,
+            city: user?.city,
+            phone: user?.phone,
+          },
           paymentMethod: payment,
           itemsPrice: priceRaw,
           shippingPrice: deliveryPrice,
           totalPrice: totalPrice,
-          user: user?.id,
+          user: user?.id || user?._id,
           isPaid: isPaid,
           paidAt: isPaid ? new Date() : null
         }, 
@@ -279,7 +284,7 @@ const PaymentPage = () => {
                   </div>
                 ) : (
                   <ButtonComponent
-                    onClick={handleCheckout}
+                    onClick={() => handleCheckout(false)}
                     size="large"
                     textButton="Đặt hàng"
                     styleButton={{ width: '100%', background: 'rgb(26, 148, 255)', borderRadius: 4, height: 44, border: 'none' }}

@@ -221,19 +221,19 @@ const AdminProduct = () => {
         sorter: (a, b) => a.price - b.price,
         filters: [
           {
-            text: '>= 500000',
+            text: '>= 10000000',
             value: '>=',
           },
           {
-            text: '<= 500000',
+            text: '<= 10000000',
             value: '<=',
           },
         ],
         onFilter: (value, record) => {
           if(value === '>=') {
-            return record.price >= 500000
+            return record.price >= 10000000
           } else {
-          return record.price <= 500000
+          return record.price <= 10000000
           }
         },
       },

@@ -4,7 +4,7 @@ const orderSchema= new mongoose. Schema({
         {  
             name: { type: String, required: true },  
             amount: { type: Number, required: true },  
-            image: { type: String, required: true },  
+            image: { type: String },  
             price: {type: Number, required: true },  
             product: {  
                 type: mongoose.Schema.Types.ObjectId,  
